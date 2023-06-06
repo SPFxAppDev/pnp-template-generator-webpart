@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "sp-fx-app-dev-pn-p-template-generator-client-side-solution",
+    "id": "08e2b3f4-bead-4d13-9674-ea482922c420",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.17.3"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "SPFx app dev PnP template generator description"
+      },
+      "longDescription": {
+        "default": "SPFx app dev PnP template generator description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "sp-fx-app-dev-pn-p-template-generator Feature",
+        "description": "The feature that activates elements of the sp-fx-app-dev-pn-p-template-generator solution.",
+        "id": "d8db48ae-2471-42aa-acf6-481f5587bf8a",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/sp-fx-app-dev-pn-p-template-generator.sppkg"
+  }
+}
