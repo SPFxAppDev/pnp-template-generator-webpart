@@ -3,6 +3,7 @@ import { IContentType } from "./IContentType";
 import { IField } from "./IField";
 
 export interface IList extends IBaseTemplateModel {
+    UniqueId: string;
     Title: string;
     Url: string;
     TemplateType: string;

@@ -47,7 +47,7 @@ export class Field extends ElementBase {
     List?: string;
     ShowField?: string;
 
-    //TaxonomyFieldTypeMulti
+    //TaxonomyFieldType
     public get SourceID(): string {
         if(this.Type === 'TaxonomyFieldType') {
             return 'http://schemas.microsoft.com/sharepoint/v3';
@@ -55,6 +55,9 @@ export class Field extends ElementBase {
 
         return null;
     }
+
+    TermGroupName?: string;
+    TermSetName?: string;
 
     //User
     UserSelectionMode?: string;
@@ -162,22 +165,6 @@ export class Field extends ElementBase {
         return this.ShowField;
     }
 
-    public get AdditionalField(): IField {
-        if(this.Type !== 'TaxonomyFieldType') {
-            return null;
-        }
-
-        const noteFieldForTaxonomy = new Field();
-        noteFieldForTaxonomy.Type = 'Note';
-        noteFieldForTaxonomy.DisplayName = `${this.Name}TaxHTField0`;
-        noteFieldForTaxonomy.Name = `${this.Name}TaxHTField0`;
-        noteFieldForTaxonomy.Required = false;
-        noteFieldForTaxonomy.Hidden = true;
-        //TODO ==> ShowInViewForms = false CanToggleHidden = true
-
-        return noteFieldForTaxonomy;
-    }
-
     protected attributeMapper: AttributeMapper[] = [
         { ownPropertyName: 'ID', elementName: 'ID' },
         { ownPropertyName: 'typeInXml', elementName: 'Type' },
@@ -197,11 +184,13 @@ export class Field extends ElementBase {
         { ownPropertyName: 'RichTextMode', elementName: 'RichTextMode' },
         { ownPropertyName: 'lookupList', elementName: 'List' },
         { ownPropertyName: 'showField', elementName: 'ShowField' },
+        { ownPropertyName: 'SourceID', elementName: 'SourceID' },        
     ];
 
     constructor() {
         super();
         this.ID = '{' + Guid.newGuid().toString().toUpperCase() + '}';
+        this.Type = 'Text';
     }
 
     public toElement(rootDocument: XMLDocument): Element {

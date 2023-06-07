@@ -108,10 +108,8 @@ export class PnPTemplateGeneratorServiceService implements IPnPTemplateGenerator
             const fieldElement = field.toElement(this.tpl);
 
             if(field.Type === 'TaxonomyFieldType') {
-                const taxNotefieldComment = this.tpl.createComment(` ${field.Name}TaxHTField0 `);
-                fields.appendChild(taxNotefieldComment);
-                const noteElementForTaxonomy = this.createAdditionalElementsForTaxonomy(field, this.tpl, fieldElement);
-                fields.appendChild(noteElementForTaxonomy);
+                this.createAdditionalElementsForTaxonomy(field, this.tpl, fieldElement);
+                
             }
 
             const fieldComment = this.tpl.createComment(` ${field.Name} `);
@@ -200,13 +198,24 @@ export class PnPTemplateGeneratorServiceService implements IPnPTemplateGenerator
         parentElement.appendChild(el);
     }
 
-    private createAdditionalElementsForTaxonomy(taxonomyField: IField, rootDocument: XMLDocument, taxonomyElement: Element): Element {
+    private createAdditionalElementsForTaxonomy(taxonomyField: IField, rootDocument: XMLDocument, taxonomyElement: Element): void {
 
-        const noteFieldForTaxonomy = taxonomyField.AdditionalField;
+        
         const customization = rootDocument.createElement("Customization");
         const propsArray = rootDocument.createElement("ArrayOfProperty");
 
         const props: TaxonomyElementArrayProps[] = [
+            { 
+                NameElementValue: 'SspId', 
+                ValueElement: { 
+                    value: '{sitecollectiontermstoreid}', 
+                    attributes: { 
+                        'xmlns:q1': 'http://www.w3.org/2001/XMLSchema',
+                        'p4:type': 'q1:string',
+                        'xmlns:p4': 'http://www.w3.org/2001/XMLSchema-instance',
+                    }
+                } 
+            },
             { 
                 NameElementValue: 'UserCreated', 
                 ValueElement: { 
@@ -225,17 +234,6 @@ export class PnPTemplateGeneratorServiceService implements IPnPTemplateGenerator
                     attributes: { 
                         'xmlns:q5': 'http://www.w3.org/2001/XMLSchema',
                         'p4:type': 'q5:boolean',
-                        'xmlns:p4': 'http://www.w3.org/2001/XMLSchema-instance',
-                    }
-                } 
-            },
-            { 
-                NameElementValue: 'TextField', 
-                ValueElement: { 
-                    value: noteFieldForTaxonomy.ID, 
-                    attributes: { 
-                        'xmlns:q6': 'http://www.w3.org/2001/XMLSchema',
-                        'p4:type': 'q6:string',
                         'xmlns:p4': 'http://www.w3.org/2001/XMLSchema-instance',
                     }
                 } 
@@ -263,17 +261,6 @@ export class PnPTemplateGeneratorServiceService implements IPnPTemplateGenerator
                 } 
             },
             { 
-                NameElementValue: 'TargetTemplate', 
-                ValueElement: { 
-                    value: '_layouts/Categories.aspx', 
-                    attributes: { 
-                        'xmlns:q9': 'http://www.w3.org/2001/XMLSchema',
-                        'p4:type': 'q9:string',
-                        'xmlns:p4': 'http://www.w3.org/2001/XMLSchema-instance',
-                    }
-                } 
-            },
-            { 
                 NameElementValue: 'CreateValuesInEditForm', 
                 ValueElement: { 
                     value: 'false', 
@@ -283,52 +270,22 @@ export class PnPTemplateGeneratorServiceService implements IPnPTemplateGenerator
                         'xmlns:p4': 'http://www.w3.org/2001/XMLSchema-instance',
                     }
                 } 
-            },
-            { 
-                NameElementValue: 'FilterAssemblyStrongName', 
-                ValueElement: { 
-                    value: 'Microsoft.SharePoint.Taxonomy, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c', 
-                    attributes: { 
-                        'xmlns:q11': 'http://www.w3.org/2001/XMLSchema',
-                        'p4:type': 'q11:string',
-                        'xmlns:p4': 'http://www.w3.org/2001/XMLSchema-instance',
-                    }
-                } 
-            },
-            { 
-                NameElementValue: 'FilterClassName', 
-                ValueElement: { 
-                    value: 'Microsoft.SharePoint.Taxonomy.TaxonomyField', 
-                    attributes: { 
-                        'xmlns:q12': 'http://www.w3.org/2001/XMLSchema',
-                        'p4:type': 'q12:string',
-                        'xmlns:p4': 'http://www.w3.org/2001/XMLSchema-instance',
-                    }
-                } 
-            },
-            { 
-                NameElementValue: 'FilterMethodName', 
-                ValueElement: { 
-                    value: 'GetFilteringHtml', 
-                    attributes: { 
-                        'xmlns:q13': 'http://www.w3.org/2001/XMLSchema',
-                        'p4:type': 'q13:string',
-                        'xmlns:p4': 'http://www.w3.org/2001/XMLSchema-instance',
-                    }
-                } 
-            },
-            { 
-                NameElementValue: 'FilterJavascriptProperty', 
-                ValueElement: { 
-                    value: 'FilteringJavascript', 
-                    attributes: { 
-                        'xmlns:q14': 'http://www.w3.org/2001/XMLSchema',
-                        'p4:type': 'q14:string',
-                        'xmlns:p4': 'http://www.w3.org/2001/XMLSchema-instance',
-                    }
-                } 
             }
         ];
+
+        if(!isNullOrEmpty(taxonomyField.TermGroupName) && !isNullOrEmpty(taxonomyField.TermSetName)) {
+            props.AddAt(1, { 
+                NameElementValue: 'TermSetId', 
+                ValueElement: { 
+                    value: `{termsetid:${taxonomyField.TermGroupName}:${taxonomyField.TermSetName}}`, 
+                    attributes: { 
+                        'xmlns:q2': 'http://www.w3.org/2001/XMLSchema',
+                        'p4:type': 'q2:string',
+                        'xmlns:p4': 'http://www.w3.org/2001/XMLSchema-instance',
+                    }
+                } 
+            })
+        }
 
         props.forEach((props: TaxonomyElementArrayProps) => {
             const propertyElement = rootDocument.createElement("Property");
@@ -352,8 +309,6 @@ export class PnPTemplateGeneratorServiceService implements IPnPTemplateGenerator
 
         customization.appendChild(propsArray);
         taxonomyElement.appendChild(customization);
-
-        return noteFieldForTaxonomy.toElement(rootDocument);
     }
 
 }

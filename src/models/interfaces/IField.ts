@@ -31,7 +31,8 @@ export interface IField extends IBaseTemplateModel {
 
     //Taxonomy
     SourceID?: string;
-    AdditionalField?: IField;
+    TermGroupName?: string;
+    TermSetName?: string;
 
     //User
     UserSelectionMode?: string;

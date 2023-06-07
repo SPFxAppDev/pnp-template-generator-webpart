@@ -1,6 +1,7 @@
 import { IContentType, IField, IList } from "./interfaces";
 import { AttributeMapper, ElementBase } from "./ElementBase";
 import { isNullOrEmpty, isset } from "@spfxappdev/utility";
+import { Guid } from "@microsoft/sp-core-library";
 
 export interface List extends IList {}
 
@@ -26,9 +27,13 @@ export class List extends ElementBase {
     MaxVersionLimit?: number;
     DraftVersionVisibility?: number;
 
+    private get fullUrl(): string {
+        return this.TemplateType == '101' ? this.Url : `Lists/${this.Url}`;
+    }
+
     protected attributeMapper: AttributeMapper[] = [
         { ownPropertyName: 'Title', elementName: 'Title' },
-        { ownPropertyName: 'Url', elementName: 'Url' },
+        { ownPropertyName: 'fullUrl', elementName: 'Url' },
         { ownPropertyName: 'Description', elementName: 'Description' },
         { ownPropertyName: 'TemplateType', elementName: 'TemplateType' },
         { ownPropertyName: 'Hidden', elementName: 'Hidden' },
@@ -37,6 +42,7 @@ export class List extends ElementBase {
     constructor() {
         super();
         this.TemplateType = "100";
+        this.UniqueId = Guid.newGuid().toString();
     }
 
     public toElement(rootDocument: XMLDocument): Element {

@@ -389,6 +389,34 @@ export default class SiteColumnsGenerator extends React.Component<ISiteColumnsGe
                     });
                 }}
             />
+
+            <TextField 
+                label='Termgroup Name'
+                defaultValue={currentField.TermGroupName}
+                onChange={(ev: any, newValue: string) => {
+                    const field = cloneDeep(this.state.currentField);
+                    field.TermGroupName = newValue;
+
+                    this.setState({
+                        currentField: field,
+                        isAddOrUpdateButtonDisabled: this.isAddOrUpdateButtonDisabled(field)
+                    });
+                }}
+            />
+
+            <TextField 
+                label='Termgset Name'
+                defaultValue={currentField.TermSetName}
+                onChange={(ev: any, newValue: string) => {
+                    const field = cloneDeep(this.state.currentField);
+                    field.TermSetName = newValue;
+
+                    this.setState({
+                        currentField: field,
+                        isAddOrUpdateButtonDisabled: this.isAddOrUpdateButtonDisabled(field)
+                    });
+                }}
+            />
         </>;
     }
 

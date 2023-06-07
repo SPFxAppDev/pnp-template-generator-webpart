@@ -5,6 +5,19 @@
   padding: 1em;
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
+
+  .header-label {
+    font-size: 20px;
+    padding: 10px 0;
+  }
+
+  .template-header {
+    padding: 10px 0;
+
+    button {
+      margin-right: 10px;
+    }
+  }
 }
 
 :global {

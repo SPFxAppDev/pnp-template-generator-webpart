@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from '../PnPTemplateGenerator.module.scss';
-import { IColumn, DetailsList, SelectionMode, Selection, Dialog, DialogFooter, DefaultButton, PrimaryButton, TextField, Dropdown, IDropdownOption, SelectableOptionMenuItemType } from '@fluentui/react';
+import { IColumn, DetailsList, SelectionMode, Selection, Dialog, DialogFooter, DefaultButton, PrimaryButton, TextField, Dropdown, IDropdownOption, SelectableOptionMenuItemType, Toggle } from '@fluentui/react';
 import { ContentType, IContentType, IField } from '../../../../models';
 import { IBaseGeneratorComponentProps } from './IBaseGeneratorComponentProps';
 import { isFunction, isNullOrEmpty } from '@spfxappdev/utility';
@@ -41,7 +41,11 @@ export default class ContentTypesGenerator extends React.Component<IContentTypes
             { key: '0x0120', text: 'Folder' }            
         ];
 
-        const { contentTypes } = this.props.pnpTemplateGeneratorService.pnpTemplate;
+        let { contentTypes } = this.props.pnpTemplateGeneratorService.pnpTemplate;
+
+        if(!isNullOrEmpty(contentTypes)) {
+            contentTypes = contentTypes.Where(ct => !ct.ID.StartsWith(this.state.currentCT.ID));
+        }
 
         if(!isNullOrEmpty(contentTypes)) {
 
@@ -181,6 +185,7 @@ export default class ContentTypesGenerator extends React.Component<IContentTypes
                 options={this.fieldRefsTypeOptions}
                 selectedKeys={currentCT.FieldRefIds}
                 label='Fields'
+                disabled={isNullOrEmpty(currentCT.FieldRefIds)}
                 multiSelect={true}
                 onChange={(ev, option: IDropdownOption) => {
                     const contentType = cloneDeep(this.state.currentCT);
@@ -193,6 +198,54 @@ export default class ContentTypesGenerator extends React.Component<IContentTypes
                     });
                 }}
             />
+
+            <TextField 
+                label='Description'
+                multiline={true}
+                maxLength={250}
+                defaultValue={currentCT.Description}
+                onChange={(ev: any, newValue: string) => {
+                    const contentType = cloneDeep(this.state.currentCT);
+                    contentType.Description = newValue;
+
+                    this.setState({
+                        currentCT: contentType,
+                        isAddOrUpdateButtonDisabled: this.isAddOrUpdateButtonDisabled(contentType)
+                    });
+                }}
+            />
+
+            <TextField 
+                label='Group' 
+                defaultValue={currentCT.Group}
+                onChange={(ev: any, newValue: string) => {
+                    const contentType = cloneDeep(this.state.currentCT);
+                    contentType.Group = newValue;
+
+                    this.setState({
+                        currentCT: contentType,
+                        isAddOrUpdateButtonDisabled: this.isAddOrUpdateButtonDisabled(contentType)
+                    });
+                }}
+            />
+
+            <Toggle
+                label='Hidden'
+                defaultChecked={currentCT.Hidden}
+                offText='No'
+                onText='Yes'
+                onChange={(ev: any, checked) => {
+                    const contentType = cloneDeep(this.state.currentCT);
+                    contentType.Hidden = checked;
+
+                    this.setState({
+                        currentCT: contentType,
+                        isAddOrUpdateButtonDisabled: this.isAddOrUpdateButtonDisabled(contentType)
+                    });
+                }}
+            />
+
+            
 
             <DialogFooter>
                 <PrimaryButton 
@@ -311,5 +364,7 @@ export default class ContentTypesGenerator extends React.Component<IContentTypes
         if(isNullOrEmpty(contentType.Name)) {
             return true;
         }
+
+        return false;
     }
 }
