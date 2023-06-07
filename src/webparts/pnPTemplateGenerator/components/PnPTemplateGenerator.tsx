@@ -21,13 +21,11 @@ export default class PnPTemplateGenerator extends React.Component<IPnPTemplateGe
     super(props);
   }
 
-  public render(): React.ReactElement<IPnPTemplateGeneratorProps> {
-    
-    // this.props.pnpTemplateGeneratorService.addList();
-    
+  public render(): React.ReactElement<IPnPTemplateGeneratorProps> {   
 
     return (
       <div className={styles.pnpTemplateGenerator}>
+        <Label className={styles['header-label']}>PnP Provisioning Template Generator</Label>
         <div>
         <Pivot aria-label="Basic Pivot Example">
           <PivotItem
@@ -59,17 +57,27 @@ export default class PnPTemplateGenerator extends React.Component<IPnPTemplateGe
         </Pivot>
         </div>
         <div>
-          <Label>Generated PnP Template</Label>
+          <Label className={styles['header-label']}>Generated PnP Template</Label>
           {this.state.showTemplateLoadingSpinner && <Spinner />}
           {!this.state.showTemplateLoadingSpinner && 
             <>
-            <DefaultButton 
-              text='Copy to Clipboard'
-              onClick={async () => {
-                try { await window.navigator.clipboard.writeText(this.props.pnpTemplateGeneratorService.getTemplate()) } 
-                catch {}
-                finally {}
-              }} />
+            <div className={styles['template-header']}>
+              <DefaultButton 
+                text='Copy to Clipboard'
+                onClick={async () => {
+                  try { await window.navigator.clipboard.writeText(this.props.pnpTemplateGeneratorService.getTemplate()) } 
+                  catch {}
+                  finally {}
+                }} />
+
+              <DefaultButton 
+                text='Save template'
+                onClick={() => {
+                  this.saveTemplateAsXmlFile();
+                }} />
+
+
+            </div>
             <MonacoEditor value={this.props.pnpTemplateGeneratorService.getTemplate()}
                showMiniMap={true}
                readOnly={true}
@@ -90,5 +98,13 @@ export default class PnPTemplateGenerator extends React.Component<IPnPTemplateGe
         showTemplateLoadingSpinner: false
       });
     });
+  }
+
+  private saveTemplateAsXmlFile(): void {
+    const link = document.createElement('a');
+    link.download = 'template.xml';
+    const blob = new Blob([this.props.pnpTemplateGeneratorService.getTemplate()], {type: 'text/xml'});
+    link.href = window.URL.createObjectURL(blob);
+    link.click();
   }
 }
